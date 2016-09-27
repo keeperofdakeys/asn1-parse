@@ -1,5 +1,5 @@
 [package]
-name = "asn1-nom"
+name = "asn1-parse"
 version = "0.1.0"
 authors = ["Josh <keeperofdakeys@gmail.com>"]
 
@@ -10,4 +10,4 @@ name = "run"
 [dependencies]
 # nom = "^1.2"
 # Use our nom for the eol patch
-nom = { path = "../../nom" }
+nom = { path = "../nom" }
