@@ -28,8 +28,8 @@ named!(pub asn1_type_def <Asn1Def>, chain!(
 
 named!(pub asn1_type <Asn1Type>, alt!(
   chain!(s: asn1_seq, || Asn1Type::Seq(s)) |
-  chain!(t: asn1_assignment, || Asn1Type::Type(t)) |
-  chain!(c: asn1_choice, || Asn1Type::Choice(c))
+  chain!(c: asn1_choice, || Asn1Type::Choice(c)) |
+  chain!(t: asn1_assignment, || Asn1Type::Type(t))
 ));
 
 named!(pub asn1_assignment <String>, chain!(
