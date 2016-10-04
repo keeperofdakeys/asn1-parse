@@ -20,7 +20,8 @@ fn main() {
     None => io::stdin().bytes().collect(),
   };
   let buffer = bytes.unwrap();
-  println!("{:?}", many0!(buffer.as_slice(), asn1_type_def));
+  let elems: nom::IResult<_, _> = many0!(buffer.as_slice(), complete!(asn1_type_def));
+  println!("{:#?}", elems);
 }
 
 struct ProgOpts {
