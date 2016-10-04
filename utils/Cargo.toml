@@ -1,0 +1,13 @@
+[package]
+name = "asn1-parse-utils"
+version = "0.1.0"
+authors = ["Josh <keeperofdakeys@gmail.comm>"]
+
+[[bin]]
+path = "src/asn1-spec-dump.rs"
+name = "dump"
+
+[dependencies]
+asn1-parse = { path = "../../asn1-parse" }
+nom = "^1.2"
+argparse = "0.2"
