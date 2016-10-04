@@ -8,6 +8,7 @@ path = "src/asn1-spec-dump.rs"
 name = "dump"
 
 [dependencies]
-asn1-parse = { path = "../../asn1-parse" }
-nom = "^1.2"
+asn1-parse = { path = "../" }
+# nom = "^1.2"
+nom = { path = "../../nom" }
 argparse = "0.2"
