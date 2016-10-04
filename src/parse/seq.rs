@@ -1,17 +1,8 @@
 use data::{Asn1Seq, Asn1SeqField};
-use parse::{asn1_type_name, asn1_type};
+use parse::asn1_field;
 use parse::space::{skip_other};
 
-named!(pub asn1_seq_field <Asn1SeqField>, chain!(
-  skip_other? ~
-  name: asn1_type_name ~
-  skip_other? ~
-  asn1_type: asn1_type,
-  || Asn1SeqField {
-    name: name,
-    asn1_type: asn1_type,
-  }
-));
+named!(pub asn1_seq_field <Asn1SeqField>, call!(asn1_field));
 
 named!(pub asn1_seq <Asn1Seq>, chain!(
   tag!("SEQUENCE") ~
@@ -30,40 +21,16 @@ named!(pub asn1_seq <Asn1Seq>, chain!(
 ));
 
 #[test]
-fn test_asn1_sequence_field() {
-  let field1 = Asn1SeqField {
-    name: "foo".into(),
-    asn1_type: ::data::Asn1Type::Type("Bar".into()),
-  };
-  let field2 = Asn1SeqField {
-    name: "asdf".into(),
-    asn1_type: ::data::Asn1Type::Type("INTEGER".into()),
-  };
-  assert_eq!(
-    field1,
-    asn1_seq_field("foo Bar".as_bytes()).unwrap().1
-  );
-  assert_eq!(
-    field2,
-    asn1_seq_field("asdf INTEGER,".as_bytes()).unwrap().1
-  );
-  assert_eq!(
-    field1,
-    asn1_seq_field("foo--test\n Bar".as_bytes()).unwrap().1
-  );
-}
-
-#[test]
-fn test_seq_fields() {
+fn test_sequence() {
   let seq = Asn1Seq {
     fields: vec![
       Asn1SeqField {
         name: "foo".into(),
-        asn1_type: ::data::Asn1Type::Type("Bar".into()),
+        asn1_type: ::Asn1Type::Type("Bar".into()),
       },
       Asn1SeqField {
         name: "asdf".into(),
-        asn1_type: ::data::Asn1Type::Type("INTEGER".into()),
+        asn1_type: ::Asn1Type::Type("INTEGER".into()),
       }
     ],
   };

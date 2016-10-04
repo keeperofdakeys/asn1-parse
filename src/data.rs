@@ -15,8 +15,9 @@ pub struct Asn1Seq {
   pub fields: Vec<Asn1SeqField>,
 }
 
+pub type Asn1SeqField = Asn1Field;
 #[derive(PartialEq, Debug)]
-pub struct Asn1SeqField {
+pub struct Asn1Field {
   pub name: String,
   pub asn1_type: Asn1Type,
 }
