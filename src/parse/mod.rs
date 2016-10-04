@@ -1,9 +1,11 @@
 pub mod space;
 pub mod seq;
+pub mod choice;
 
 use nom::{space,is_alphanumeric};
 use parse::space::{skip_other};
 use parse::seq::asn1_seq;
+use parse::choice::asn1_choice;
 use data::{Asn1Type, Asn1Def, Asn1Field};
 
 named!(pub asn1_type_name <String>, chain!(
@@ -26,7 +28,8 @@ named!(pub asn1_type_def <Asn1Def>, chain!(
 
 named!(pub asn1_type <Asn1Type>, alt!(
   chain!(s: asn1_seq, || Asn1Type::Seq(s)) |
-  chain!(t: asn1_assignment, || Asn1Type::Type(t))
+  chain!(t: asn1_assignment, || Asn1Type::Type(t)) |
+  chain!(c: asn1_choice, || Asn1Type::Choice(c))
 ));
 
 named!(pub asn1_assignment <String>, chain!(
