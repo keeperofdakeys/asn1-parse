@@ -5,7 +5,6 @@ authors = ["Josh <keeperofdakeys@gmail.com>"]
 
 [lib]
 path = "src/lib.rs"
-name = "run"
 
 [dependencies]
 # nom = "^1.2"
