@@ -3,6 +3,7 @@ pub enum Asn1Type {
   Type(String),
   Seq(Asn1Seq),
   Choice(Asn1Choice),
+  Integer(Asn1Integer),
 }
 
 #[derive(PartialEq, Debug)]
@@ -29,3 +30,6 @@ pub struct Asn1Field {
   pub name: String,
   pub asn1_type: Asn1Type,
 }
+
+#[derive(PartialEq, Debug)]
+pub struct Asn1Integer;
