@@ -59,7 +59,7 @@ fn test_asn1_field() {
   };
   let field2 = ::Asn1Field {
     name: "asdf".into(),
-    asn1_type: ::Asn1Type::Type("INTEGER".into()),
+    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
   };
   assert_eq!(
     field1,
