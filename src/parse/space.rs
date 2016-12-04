@@ -7,16 +7,16 @@ named!(pub comment <()>, chain!(
   || ()
 ));
 
-named!(pub skip_other <()>, chain!(
-  multispace? ~
-  comment? ~
-  multispace? ~
-  chain!(
+named!(pub skip_other <()>, do_parse!(
+  opt!(multispace) >>
+  opt!(comment) >>
+  opt!(multispace) >>
+  opt!(chain!(
      complete!(peek!(tag!("--"))) ~
      complete!(skip_other),
      || ()
-  )?,
-  || ()
+  )) >>
+  ()
 ));
 
 pub fn is_eol(byte: u8) -> bool {
