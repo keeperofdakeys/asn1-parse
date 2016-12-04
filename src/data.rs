@@ -56,6 +56,7 @@ pub type Asn1ChoiceField = Asn1Field;
 #[derive(PartialEq, Debug)]
 pub struct Asn1Field {
   pub name: String,
+  pub tag: Option<Asn1Tag>,
   pub asn1_type: Asn1Type,
 }
 

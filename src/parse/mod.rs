@@ -41,19 +41,19 @@ named!(pub asn1_tag <Asn1Tag>, do_parse!(
   (tag)
 ));
 
-named!(pub asn1_type_def <Asn1Def>, chain!(
-  skip_other? ~
-  name: asn1_type_name ~
-  space? ~
-  tag!("::=") ~
-  tag: asn1_tag? ~
-  space? ~
-  asn1_type: asn1_type,
-  || Asn1Def {
+named!(pub asn1_type_def <Asn1Def>, do_parse!(
+  opt!(skip_other) >>
+  name: asn1_type_name >>
+  opt!(space) >>
+  tag!("::=") >>
+  tag: opt!(asn1_tag) >>
+  opt!(space) >>
+  asn1_type: asn1_type >>
+  (Asn1Def {
     name: name,
     tag: tag,
     assign: asn1_type,
-  }
+  })
 ));
 
 named!(pub asn1_type <Asn1Type>, alt!(
@@ -68,40 +68,19 @@ named!(pub asn1_assignment <String>, chain!(
   || t
 ));
 
-named!(pub asn1_field <Asn1Field>, chain!(
-  skip_other? ~
-  name: asn1_type_name ~
-  skip_other? ~
-  asn1_type: asn1_type,
-  || Asn1Field {
+named!(pub asn1_field <Asn1Field>, do_parse!(
+  opt!(skip_other) >>
+  name: asn1_type_name >>
+  opt!(skip_other) >>
+  tag: opt!(asn1_tag) >>
+  opt!(skip_other) >>
+  asn1_type: asn1_type >>
+  (Asn1Field {
     name: name,
+    tag: tag,
     asn1_type: asn1_type,
-  }
+  })
 ));
-
-#[test]
-fn test_asn1_field() {
-  let field1 = ::Asn1Field {
-    name: "foo".into(),
-    asn1_type: ::Asn1Type::Type("Bar".into()),
-  };
-  let field2 = ::Asn1Field {
-    name: "asdf".into(),
-    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
-  };
-  assert_eq!(
-    field1,
-    asn1_field("foo Bar".as_bytes()).unwrap().1
-  );
-  assert_eq!(
-    field2,
-    asn1_field("asdf INTEGER,".as_bytes()).unwrap().1
-  );
-  assert_eq!(
-    field1,
-    asn1_field("foo--test\n Bar".as_bytes()).unwrap().1
-  );
-}
 
 #[test]
 fn test_asn1_tag() {
@@ -115,5 +94,31 @@ fn test_asn1_tag() {
   assert_eq!(
     asn1_tag("[PRIVATE 24]".as_bytes()).unwrap().1,
     (Asn1Class::Private, 24)
+  );
+}
+
+#[test]
+fn test_asn1_field() {
+  let field1 = ::Asn1Field {
+    name: "foo".into(),
+    tag: None,
+    asn1_type: ::Asn1Type::Type("Bar".into()),
+  };
+  let field2 = ::Asn1Field {
+    name: "asdf".into(),
+    tag: Some((Asn1Class::Application, 9)),
+    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+  };
+  assert_eq!(
+    field1,
+    asn1_field("foo Bar".as_bytes()).unwrap().1
+  );
+  assert_eq!(
+    field2,
+    asn1_field("asdf [APPLICATION 9] INTEGER,".as_bytes()).unwrap().1
+  );
+  assert_eq!(
+    field1,
+    asn1_field("foo--test\n Bar".as_bytes()).unwrap().1
   );
 }

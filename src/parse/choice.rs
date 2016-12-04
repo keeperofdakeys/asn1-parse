@@ -26,10 +26,12 @@ fn test_choice() {
     fields: vec![
       Asn1ChoiceField {
         name: "foo".into(),
+        tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
       },
       Asn1ChoiceField {
         name: "asdf".into(),
+        tag: None,
         asn1_type: ::Asn1Type::Integer(::Asn1Integer),
       }
     ],

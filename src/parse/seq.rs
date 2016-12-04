@@ -26,10 +26,12 @@ fn test_sequence() {
     fields: vec![
       Asn1SeqField {
         name: "foo".into(),
+        tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
       },
       Asn1SeqField {
         name: "asdf".into(),
+        tag: None,
         asn1_type: ::Asn1Type::Integer(::Asn1Integer),
       }
     ],
