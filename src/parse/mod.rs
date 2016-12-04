@@ -3,16 +3,42 @@ pub mod seq;
 pub mod choice;
 pub mod int;
 
-use nom::{space,is_alphanumeric};
+use nom::{space, is_alphanumeric, alpha, digit};
 use parse::space::{skip_other};
 use parse::seq::asn1_seq;
 use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
-use data::{Asn1Type, Asn1Def, Asn1Field};
+use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field};
 
 named!(pub asn1_type_name <String>, chain!(
   s: take_while!(is_alphanumeric),
   || String::from_utf8(Vec::from(s)).unwrap()
+));
+
+named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
+  opt!(space) >>
+  class: opt!(alpha) >>
+  opt!(space) >>
+  tag_num: digit >>
+  opt!(space) >>
+  ( {
+      let class = class.and_then(|i|
+        String::from_utf8(Vec::from(i)).ok()
+      );
+      Asn1Class::parse(class).expect("Couldn't parse tag class")
+    },
+    String::from_utf8(Vec::from(tag_num)).unwrap().parse().expect("Couldn't parse tag number")
+  )
+));
+
+named!(pub asn1_tag <Asn1Tag>, do_parse!(
+  opt!(space) >>
+  tag: delimited!(
+    tag!("["),
+    asn1_class_tag,
+    tag!("]")
+  ) >>
+  (tag)
 ));
 
 named!(pub asn1_type_def <Asn1Def>, chain!(
@@ -20,10 +46,12 @@ named!(pub asn1_type_def <Asn1Def>, chain!(
   name: asn1_type_name ~
   space? ~
   tag!("::=") ~
+  tag: asn1_tag? ~
   space? ~
   asn1_type: asn1_type,
   || Asn1Def {
     name: name,
+    tag: tag,
     assign: asn1_type,
   }
 ));
@@ -72,5 +100,20 @@ fn test_asn1_field() {
   assert_eq!(
     field1,
     asn1_field("foo--test\n Bar".as_bytes()).unwrap().1
+  );
+}
+
+#[test]
+fn test_asn1_tag() {
+  let tag: Asn1Tag = (Asn1Class::ContextSpecific, 32);
+  assert_eq!(asn1_tag("[32]".as_bytes()).unwrap().1, tag);
+  assert_eq!(asn1_tag("[ 32 ]".as_bytes()).unwrap().1, tag);
+  assert_eq!(
+    asn1_tag("[APPLICATION 12]".as_bytes()).unwrap().1,
+    (Asn1Class::Application, 12)
+  );
+  assert_eq!(
+    asn1_tag("[PRIVATE 24]".as_bytes()).unwrap().1,
+    (Asn1Class::Private, 24)
   );
 }
