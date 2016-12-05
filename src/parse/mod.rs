@@ -1,11 +1,13 @@
 pub mod space;
 pub mod seq;
+pub mod set;
 pub mod choice;
 pub mod int;
 
 use nom::{space, is_alphanumeric, alpha, digit};
 use parse::space::{skip_other};
 use parse::seq::asn1_seq;
+use parse::set::asn1_set;
 use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
 use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field};
@@ -58,6 +60,7 @@ named!(pub asn1_type_def <Asn1Def>, do_parse!(
 
 named!(pub asn1_type <Asn1Type>, alt!(
   chain!(s: asn1_seq, || Asn1Type::Seq(s)) |
+  chain!(s: asn1_set, || Asn1Type::Set(s)) |
   chain!(c: asn1_choice, || Asn1Type::Choice(c)) |
   chain!(i: asn1_integer, || Asn1Type::Integer(i)) |
   chain!(t: asn1_assignment, || Asn1Type::Type(t))

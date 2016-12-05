@@ -2,6 +2,7 @@
 pub enum Asn1Type {
   Type(String),
   Seq(Asn1Seq),
+  Set(Asn1Set),
   Choice(Asn1Choice),
   Integer(Asn1Integer),
 }
@@ -46,11 +47,17 @@ pub struct Asn1Seq {
 }
 
 #[derive(PartialEq, Debug)]
+pub struct Asn1Set {
+  pub fields: Vec<Asn1SeqField>,
+}
+
+#[derive(PartialEq, Debug)]
 pub struct Asn1Choice {
   pub fields: Vec<Asn1ChoiceField>,
 }
 
 pub type Asn1SeqField = Asn1Field;
+pub type Asn1SetField = Asn1Field;
 pub type Asn1ChoiceField = Asn1Field;
 
 #[derive(PartialEq, Debug)]
