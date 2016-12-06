@@ -78,10 +78,13 @@ named!(pub asn1_field <Asn1Field>, do_parse!(
   tag: opt!(asn1_tag) >>
   opt!(skip_other) >>
   asn1_type: asn1_type >>
+  opt!(skip_other) >>
+  optional: opt!(tag!("OPTIONAL")) >>
   (Asn1Field {
     name: name,
     tag: tag,
     asn1_type: asn1_type,
+    optional: optional.is_some(),
   })
 ));
 
@@ -106,15 +109,23 @@ fn test_asn1_field() {
     name: "foo".into(),
     tag: None,
     asn1_type: ::Asn1Type::Type("Bar".into()),
+    optional: false,
   };
   let field2 = ::Asn1Field {
     name: "asdf".into(),
     tag: Some((Asn1Class::Application, 9)),
     asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+    optional: false,
+  };
+  let field3 = ::Asn1Field {
+    name: "sample".into(),
+    tag: None,
+    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+    optional: true,
   };
   assert_eq!(
     field1,
-    asn1_field("foo Bar".as_bytes()).unwrap().1
+    asn1_field("foo Bar,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field2,
@@ -122,6 +133,10 @@ fn test_asn1_field() {
   );
   assert_eq!(
     field1,
-    asn1_field("foo--test\n Bar".as_bytes()).unwrap().1
+    asn1_field("foo--test\n Bar,".as_bytes()).unwrap().1
+  );
+  assert_eq!(
+    field3,
+    asn1_field("sample INTEGER OPTIONAL,".as_bytes()).unwrap().1
   );
 }

@@ -28,11 +28,13 @@ fn test_sequence() {
         name: "foo".into(),
         tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
+        optional: false,
       },
       Asn1SeqField {
         name: "asdf".into(),
         tag: None,
         asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+        optional: false,
       }
     ],
   };
