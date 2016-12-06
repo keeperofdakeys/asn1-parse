@@ -53,7 +53,7 @@ fn test_comment() {
 fn test_skip_other() {
   assert_eq!(
     "".as_bytes(),
-    skip_other("  --\n".as_bytes()).unwrap().0
+    skip_other("  --\n\n".as_bytes()).unwrap().0
   );
   assert_eq!(
     "".as_bytes(),
