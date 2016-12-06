@@ -3,6 +3,7 @@ pub mod seq;
 pub mod set;
 pub mod choice;
 pub mod int;
+pub mod spec;
 
 use nom::{space, is_alphanumeric, alpha, digit};
 use parse::space::{skip_other};
@@ -44,7 +45,6 @@ named!(pub asn1_tag <Asn1Tag>, do_parse!(
 ));
 
 named!(pub asn1_type_def <Asn1Def>, do_parse!(
-  opt!(skip_other) >>
   name: asn1_type_name >>
   opt!(space) >>
   tag!("::=") >>

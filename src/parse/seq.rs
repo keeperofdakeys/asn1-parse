@@ -41,10 +41,10 @@ fn test_sequence() {
   assert_eq!(
     seq,
     asn1_seq("\
-      SEQUENCE {\
-        foo Bar,\
-        asdf INTEGER\
-      }\
+      SEQUENCE { \
+        foo Bar, \
+        asdf INTEGER \
+      } \
     ".as_bytes()).unwrap().1
   );
   assert_eq!(
