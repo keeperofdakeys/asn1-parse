@@ -6,7 +6,7 @@ pub mod int;
 pub mod spec;
 
 use nom::{is_alphanumeric, alpha, digit};
-use parse::space::{skip_other};
+use parse::space::skip_other;
 use parse::seq::asn1_seq;
 use parse::set::asn1_set;
 use parse::choice::asn1_choice;
@@ -19,11 +19,9 @@ named!(pub asn1_type_name <String>, do_parse!(
 ));
 
 named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
-  opt!(skip_other) >>
   class: opt!(alpha) >>
   opt!(skip_other) >>
   tag_num: digit >>
-  opt!(skip_other) >>
   ( {
       let class = class.and_then(|i|
         String::from_utf8(Vec::from(i)).ok()
@@ -35,11 +33,10 @@ named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
 ));
 
 named!(pub asn1_tag <Asn1Tag>, do_parse!(
-  opt!(skip_other) >>
   tag: delimited!(
     tag!("["),
     asn1_class_tag,
-    tag!("]")
+    tuple!(opt!(skip_other), tag!("]"))
   ) >>
   (tag)
 ));
@@ -48,6 +45,7 @@ named!(pub asn1_type_def <Asn1Def>, do_parse!(
   name: asn1_type_name >>
   opt!(skip_other) >>
   tag!("::=") >>
+  opt!(skip_other) >>
   tag: opt!(asn1_tag) >>
   opt!(skip_other) >>
   asn1_type: asn1_type >>
@@ -69,7 +67,6 @@ named!(pub asn1_type <Asn1Type>, alt!(
 named!(pub asn1_assignment <String>, call!(asn1_type_name));
 
 named!(pub asn1_field <Asn1Field>, do_parse!(
-  opt!(skip_other) >>
   name: asn1_type_name >>
   opt!(skip_other) >>
   tag: opt!(asn1_tag) >>

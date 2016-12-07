@@ -11,7 +11,7 @@ named!(pub asn1_seq <Asn1Seq>, do_parse!(
     tag!("{"),
     separated_list!(
       do_parse!(opt!(skip_other) >> tag!(",") >> ()),
-      asn1_seq_field
+      do_parse!(opt!(skip_other) >> f: asn1_seq_field >> (f))
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>

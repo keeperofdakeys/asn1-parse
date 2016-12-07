@@ -11,7 +11,7 @@ named!(pub asn1_choice <Asn1Choice>, do_parse!(
     tag!("{"),
     separated_list!(
       do_parse!(opt!(skip_other) >> tag!(",") >> ()),
-      asn1_choice_field
+      do_parse!(opt!(skip_other) >> f: asn1_choice_field >> (f))
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>

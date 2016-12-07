@@ -11,7 +11,7 @@ named!(pub asn1_set <Asn1Set>, do_parse!(
     tag!("{"),
     separated_list!(
       do_parse!(opt!(skip_other) >> tag!(",") >> ()),
-      asn1_set_field
+      do_parse!(opt!(skip_other) >> f: asn1_set_field >> (f))
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>
