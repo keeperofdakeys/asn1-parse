@@ -13,9 +13,9 @@ use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
 use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field, Asn1Optional};
 
-named!(pub asn1_type_name <String>, chain!(
-  s: take_while!(is_alphanumeric),
-  || String::from_utf8(Vec::from(s)).unwrap()
+named!(pub asn1_type_name <String>, do_parse!(
+  s: take_while!(is_alphanumeric) >>
+  (String::from_utf8(Vec::from(s)).unwrap())
 ));
 
 named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
@@ -59,11 +59,11 @@ named!(pub asn1_type_def <Asn1Def>, do_parse!(
 ));
 
 named!(pub asn1_type <Asn1Type>, alt!(
-  chain!(s: asn1_seq, || Asn1Type::Seq(s)) |
-  chain!(s: asn1_set, || Asn1Type::Set(s)) |
-  chain!(c: asn1_choice, || Asn1Type::Choice(c)) |
-  chain!(i: asn1_integer, || Asn1Type::Integer(i)) |
-  chain!(t: asn1_assignment, || Asn1Type::Type(t))
+  do_parse!(s: asn1_seq >> (Asn1Type::Seq(s))) |
+  do_parse!(s: asn1_set >> (Asn1Type::Set(s))) |
+  do_parse!(c: asn1_choice >> (Asn1Type::Choice(c))) |
+  do_parse!(i: asn1_integer >> (Asn1Type::Integer(i))) |
+  do_parse!(t: asn1_assignment >> (Asn1Type::Type(t)))
 ));
 
 named!(pub asn1_assignment <String>, chain!(
@@ -101,6 +101,7 @@ named!(pub asn1_field_default <Asn1Optional>, do_parse!(
     String::from_utf8(Vec::from(default)).unwrap()
   ))
 ));
+
 #[test]
 fn test_asn1_tag() {
   let tag: Asn1Tag = (Asn1Class::ContextSpecific, 32);
