@@ -11,7 +11,7 @@ use parse::seq::asn1_seq;
 use parse::set::asn1_set;
 use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
-use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field};
+use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field, Asn1Optional};
 
 named!(pub asn1_type_name <String>, chain!(
   s: take_while!(is_alphanumeric),
@@ -79,15 +79,28 @@ named!(pub asn1_field <Asn1Field>, do_parse!(
   opt!(skip_other) >>
   asn1_type: asn1_type >>
   opt!(skip_other) >>
-  optional: opt!(tag!("OPTIONAL")) >>
+  optional: opt!(alt!(asn1_field_optional | asn1_field_default)) >>
   (Asn1Field {
     name: name,
     tag: tag,
     asn1_type: asn1_type,
-    optional: optional.is_some(),
+    optional: optional,
   })
 ));
 
+named!(pub asn1_field_optional <Asn1Optional>, do_parse!(
+  tag!("OPTIONAL") >>
+  (Asn1Optional::Optional)
+));
+
+named!(pub asn1_field_default <Asn1Optional>, do_parse!(
+  tag!("DEFAULT") >>
+  opt!(skip_other) >>
+  default: take_while!(is_alphanumeric) >>
+  (Asn1Optional::Default(
+    String::from_utf8(Vec::from(default)).unwrap()
+  ))
+));
 #[test]
 fn test_asn1_tag() {
   let tag: Asn1Tag = (Asn1Class::ContextSpecific, 32);
@@ -109,19 +122,19 @@ fn test_asn1_field() {
     name: "foo".into(),
     tag: None,
     asn1_type: ::Asn1Type::Type("Bar".into()),
-    optional: false,
+    optional: None,
   };
   let field2 = ::Asn1Field {
     name: "asdf".into(),
     tag: Some((Asn1Class::Application, 9)),
     asn1_type: ::Asn1Type::Integer(::Asn1Integer),
-    optional: false,
+    optional: Some(Asn1Optional::Optional),
   };
   let field3 = ::Asn1Field {
     name: "sample".into(),
     tag: None,
     asn1_type: ::Asn1Type::Integer(::Asn1Integer),
-    optional: true,
+    optional: Some(Asn1Optional::Default("TRUE".into())),
   };
   assert_eq!(
     field1,
@@ -129,7 +142,7 @@ fn test_asn1_field() {
   );
   assert_eq!(
     field2,
-    asn1_field("asdf [APPLICATION 9] INTEGER,".as_bytes()).unwrap().1
+    asn1_field("asdf [APPLICATION 9] INTEGER OPTIONAL,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field1,
@@ -137,6 +150,6 @@ fn test_asn1_field() {
   );
   assert_eq!(
     field3,
-    asn1_field("sample INTEGER OPTIONAL,".as_bytes()).unwrap().1
+    asn1_field("sample INTEGER DEFAULT TRUE,".as_bytes()).unwrap().1
   );
 }

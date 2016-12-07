@@ -28,13 +28,13 @@ fn test_choice() {
         name: "foo".into(),
         tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
-        optional: false,
+        optional: None,
       },
       Asn1ChoiceField {
         name: "asdf".into(),
         tag: None,
         asn1_type: ::Asn1Type::Integer(::Asn1Integer),
-        optional: false,
+        optional: None,
       }
     ],
   };

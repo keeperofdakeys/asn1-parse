@@ -50,7 +50,7 @@ fn test_asn1_spec() {
                 name: "qwerty".into(),
                 tag: None,
                 asn1_type: ::Asn1Type::Type("Foo".into()),
-                optional: false,
+                optional: None,
               }],
             }
           ),

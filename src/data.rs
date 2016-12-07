@@ -59,11 +59,17 @@ pub type Asn1SetField = Asn1Field;
 pub type Asn1ChoiceField = Asn1Field;
 
 #[derive(PartialEq, Debug)]
+pub enum Asn1Optional {
+  Optional,
+  Default(String),
+}
+
+#[derive(PartialEq, Debug)]
 pub struct Asn1Field {
   pub name: String,
   pub tag: Option<Asn1Tag>,
   pub asn1_type: Asn1Type,
-  pub optional: bool,
+  pub optional: Option<Asn1Optional>,
 }
 
 #[derive(PartialEq, Debug)]

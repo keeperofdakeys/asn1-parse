@@ -28,13 +28,13 @@ fn test_set() {
         name: "foo".into(),
         tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
-        optional: false,
+        optional: None,
       },
       Asn1SetField {
         name: "asdf".into(),
         tag: None,
         asn1_type: ::Asn1Type::Integer(::Asn1Integer),
-        optional: false,
+        optional: None,
       }
     ],
   };
