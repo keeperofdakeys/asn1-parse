@@ -1,20 +1,20 @@
 use nom::{multispace, eol};
 
-named!(pub comment <()>, chain!(
-  tag!("--") ~
-  take_till!(is_eol) ~
-  eol,
-  || ()
+named!(pub comment <()>, do_parse!(
+  tag!("--") >>
+  take_till!(is_eol) >>
+  eol >>
+  ()
 ));
 
 named!(pub skip_other <()>, do_parse!(
   opt!(multispace) >>
   opt!(comment) >>
   opt!(multispace) >>
-  opt!(chain!(
-     complete!(peek!(tag!("--"))) ~
-     complete!(skip_other),
-     || ()
+  opt!(do_parse!(
+     complete!(peek!(tag!("--"))) >>
+     complete!(skip_other) >>
+     ()
   )) >>
   ()
 ));

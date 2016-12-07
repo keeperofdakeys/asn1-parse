@@ -1,23 +1,23 @@
 use data::{Asn1Set, Asn1SetField};
 use parse::asn1_field;
-use parse::space::{skip_other};
+use parse::space::skip_other;
 
 named!(pub asn1_set_field <Asn1SetField>, call!(asn1_field));
 
-named!(pub asn1_set <Asn1Set>, chain!(
-  tag!("SET") ~
-  skip_other? ~
+named!(pub asn1_set <Asn1Set>, do_parse!(
+  tag!("SET") >>
+  opt!(skip_other) >>
   fields: delimited!(
     tag!("{"),
     separated_list!(
-      chain!(skip_other? ~ tag!(","), || ()),
+      do_parse!(opt!(skip_other) >> tag!(",") >> ()),
       asn1_set_field
     ),
     tuple!(opt!(skip_other), tag!("}"))
-  ),
-  || Asn1Set {
+  ) >>
+  (Asn1Set {
     fields: fields,
-  }
+  })
 ));
 
 #[test]

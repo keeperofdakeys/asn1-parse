@@ -1,23 +1,23 @@
 use data::{Asn1Seq, Asn1SeqField};
 use parse::asn1_field;
-use parse::space::{skip_other};
+use parse::space::skip_other;
 
 named!(pub asn1_seq_field <Asn1SeqField>, call!(asn1_field));
 
-named!(pub asn1_seq <Asn1Seq>, chain!(
-  tag!("SEQUENCE") ~
-  skip_other? ~
+named!(pub asn1_seq <Asn1Seq>, do_parse!(
+  tag!("SEQUENCE") >>
+  opt!(skip_other) >>
   fields: delimited!(
     tag!("{"),
     separated_list!(
-      chain!(skip_other? ~ tag!(","), || ()),
+      do_parse!(opt!(skip_other) >> tag!(",") >> ()),
       asn1_seq_field
     ),
     tuple!(opt!(skip_other), tag!("}"))
-  ),
-  || Asn1Seq {
+  ) >>
+  (Asn1Seq {
     fields: fields,
-  }
+  })
 ));
 
 #[test]

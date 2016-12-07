@@ -1,23 +1,23 @@
 use data::{Asn1Choice, Asn1ChoiceField};
 use parse::asn1_field;
-use parse::space::{skip_other};
+use parse::space::skip_other;
 
 named!(pub asn1_choice_field <Asn1ChoiceField>, call!(asn1_field));
 
-named!(pub asn1_choice <Asn1Choice>, chain!(
-  tag!("CHOICE") ~
-  skip_other? ~
+named!(pub asn1_choice <Asn1Choice>, do_parse!(
+  tag!("CHOICE") >>
+  opt!(skip_other) >>
   fields: delimited!(
     tag!("{"),
     separated_list!(
-      chain!(skip_other? ~ tag!(","), || ()),
+      do_parse!(opt!(skip_other) >> tag!(",") >> ()),
       asn1_choice_field
     ),
     tuple!(opt!(skip_other), tag!("}"))
-  ),
-  || Asn1Choice {
+  ) >>
+  (Asn1Choice {
     fields: fields,
-  }
+  })
 ));
 
 #[test]
