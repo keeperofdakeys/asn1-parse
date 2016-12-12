@@ -13,11 +13,6 @@ use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
 use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field, Asn1Optional};
 
-named!(pub asn1_type_name <String>, do_parse!(
-  s: take_while!(is_alphanumeric) >>
-  (String::from_utf8(Vec::from(s)).unwrap())
-));
-
 named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
   class: opt!(alpha) >>
   opt!(skip_other) >>
@@ -64,6 +59,19 @@ named!(pub asn1_type <Asn1Type>, alt!(
   do_parse!(t: asn1_assignment >> (Asn1Type::Type(t)))
 ));
 
+named!(pub asn1_type_name <String>, do_parse!(
+  s: alt!(
+    tag!("BIT STRING") |
+    tag!("OCTET STRING") |
+    tag!("OBJECT IDENTIFIER") |
+    tag!("INSTANCE OF") |
+    tag!("EMBEDDED PDV") |
+    tag!("CHARACTER STRING") |
+    take_while!(is_alphanumeric)
+  ) >>
+  (String::from_utf8(Vec::from(s)).unwrap())
+));
+
 named!(pub asn1_assignment <String>, call!(asn1_type_name));
 
 named!(pub asn1_field <Asn1Field>, do_parse!(
@@ -95,6 +103,12 @@ named!(pub asn1_field_default <Asn1Optional>, do_parse!(
     String::from_utf8(Vec::from(default)).unwrap()
   ))
 ));
+
+#[test]
+fn test_asn1_type() {
+  assert_eq!(asn1_type_name("Foo Bar".as_bytes()).unwrap().1, "Foo");
+  assert_eq!(asn1_type_name("OCTET STRING".as_bytes()).unwrap().1, "OCTET STRING");
+}
 
 #[test]
 fn test_asn1_tag() {
