@@ -7,7 +7,7 @@ use std::io;
 use std::io::Read;
 use std::fs;
 use std::path::Path;
-use asn1_parse::parse::asn1_type_def;
+use asn1_parse::parse::spec::asn1_spec;
 use argparse::{ArgumentParser, StoreOption};
 
 fn main() {
@@ -20,7 +20,7 @@ fn main() {
     None => io::stdin().bytes().collect(),
   };
   let buffer = bytes.unwrap();
-  let elems: nom::IResult<_, _> = many0!(buffer.as_slice(), complete!(asn1_type_def));
+  let elems: nom::IResult<_, _> = many0!(buffer.as_slice(), complete!(asn1_spec));
   println!("{:#?}", elems);
 }
 

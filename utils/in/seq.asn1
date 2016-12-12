@@ -1,3 +1,0 @@
-SEQUENCE {
-     messageID       MessageID,
-     protocolOp      INTEGER }

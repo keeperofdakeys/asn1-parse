@@ -1,3 +1,5 @@
+BEGIN
+
 LDAPMessage ::= SEQUENCE {
      messageID       MessageID,
      protocolOp      CHOICE {
@@ -46,3 +48,5 @@ LDAPMessage ::= SEQUENCE {
           extendedReq           ExtendedRequest,
           extendedResp          ExtendedResponse,
           intermediateResponse  IntermediateResponse }, }
+
+END
