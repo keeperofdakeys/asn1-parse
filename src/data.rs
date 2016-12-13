@@ -7,7 +7,9 @@ pub struct Asn1Spec {
 pub enum Asn1Type {
   Type(String),
   Seq(Vec<Asn1SeqField>),
+  SeqOf(Box<Asn1Type>),
   Set(Vec<Asn1SetField>),
+  SetOf(Box<Asn1Type>),
   Choice(Vec<Asn1ChoiceField>),
   Integer,
 }
