@@ -1,10 +1,10 @@
-use data::{Asn1Set, Asn1SetField};
+use data::{Asn1Type, Asn1SetField};
 use parse::asn1_field;
 use parse::space::skip_other;
 
 named!(pub asn1_set_field <Asn1SetField>, call!(asn1_field));
 
-named!(pub asn1_set <Asn1Set>, do_parse!(
+named!(pub asn1_set <Asn1Type>, do_parse!(
   tag!("SET") >>
   opt!(skip_other) >>
   fields: delimited!(
@@ -15,15 +15,13 @@ named!(pub asn1_set <Asn1Set>, do_parse!(
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>
-  (Asn1Set {
-    fields: fields,
-  })
+  (Asn1Type::Set(fields))
 ));
 
 #[test]
 fn test_set() {
-  let set = Asn1Set {
-    fields: vec![
+  let set = Asn1Type::Set(
+    vec![
       Asn1SetField {
         name: "foo".into(),
         tag: None,
@@ -33,11 +31,11 @@ fn test_set() {
       Asn1SetField {
         name: "asdf".into(),
         tag: None,
-        asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+        asn1_type: ::Asn1Type::Integer,
         optional: None,
       }
-    ],
-  };
+    ]
+  );
   assert_eq!(
     set,
     asn1_set("\

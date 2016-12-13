@@ -34,7 +34,7 @@ fn test_asn1_spec() {
         ::Asn1Def {
           name: "Foo".into(),
           tag: None,
-          assign: ::Asn1Type::Integer(::Asn1Integer),
+          assign: ::Asn1Type::Integer,
         },
         ::Asn1Def {
           name: "Bar".into(),
@@ -45,14 +45,12 @@ fn test_asn1_spec() {
           name: "Asdf".into(),
           tag: None,
           assign: ::Asn1Type::Set(
-            ::Asn1Set {
-              fields: vec![::Asn1Field {
-                name: "qwerty".into(),
-                tag: None,
-                asn1_type: ::Asn1Type::Type("Foo".into()),
-                optional: None,
-              }],
-            }
+            vec![::Asn1Field {
+              name: "qwerty".into(),
+              tag: None,
+              asn1_type: ::Asn1Type::Type("Foo".into()),
+              optional: None,
+            }]
           ),
         }
       ],

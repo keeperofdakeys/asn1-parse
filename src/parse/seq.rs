@@ -1,10 +1,10 @@
-use data::{Asn1Seq, Asn1SeqField};
+use data::{Asn1Type, Asn1SeqField};
 use parse::asn1_field;
 use parse::space::skip_other;
 
 named!(pub asn1_seq_field <Asn1SeqField>, call!(asn1_field));
 
-named!(pub asn1_seq <Asn1Seq>, do_parse!(
+named!(pub asn1_seq <Asn1Type>, do_parse!(
   tag!("SEQUENCE") >>
   opt!(skip_other) >>
   fields: delimited!(
@@ -15,15 +15,13 @@ named!(pub asn1_seq <Asn1Seq>, do_parse!(
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>
-  (Asn1Seq {
-    fields: fields,
-  })
+  (Asn1Type::Seq(fields))
 ));
 
 #[test]
 fn test_sequence() {
-  let seq = Asn1Seq {
-    fields: vec![
+  let seq = Asn1Type::Seq(
+    vec![
       Asn1SeqField {
         name: "foo".into(),
         tag: None,
@@ -33,11 +31,11 @@ fn test_sequence() {
       Asn1SeqField {
         name: "asdf".into(),
         tag: None,
-        asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+        asn1_type: ::Asn1Type::Integer,
         optional: None,
       }
-    ],
-  };
+    ]
+  );
   assert_eq!(
     seq,
     asn1_seq("\

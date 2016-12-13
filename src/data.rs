@@ -6,10 +6,10 @@ pub struct Asn1Spec {
 #[derive(PartialEq, Debug)]
 pub enum Asn1Type {
   Type(String),
-  Seq(Asn1Seq),
-  Set(Asn1Set),
-  Choice(Asn1Choice),
-  Integer(Asn1Integer),
+  Seq(Vec<Asn1SeqField>),
+  Set(Vec<Asn1SetField>),
+  Choice(Vec<Asn1ChoiceField>),
+  Integer,
 }
 
 #[derive(PartialEq, Debug)]
@@ -46,14 +46,6 @@ pub struct Asn1Def {
   pub assign: Asn1Type,
 }
 
-#[derive(PartialEq, Debug)]
-pub struct Asn1Seq {
-  pub fields: Vec<Asn1SeqField>,
-}
-
-pub type Asn1Set = Asn1Seq;
-pub type Asn1Choice = Asn1Seq;
-
 pub type Asn1SeqField = Asn1Field;
 pub type Asn1SetField = Asn1Field;
 pub type Asn1ChoiceField = Asn1Field;
@@ -71,6 +63,3 @@ pub struct Asn1Field {
   pub asn1_type: Asn1Type,
   pub optional: Option<Asn1Optional>,
 }
-
-#[derive(PartialEq, Debug)]
-pub struct Asn1Integer;

@@ -1,7 +1,7 @@
-use data::Asn1Integer;
+use data::Asn1Type;
 use parse::space::skip_other;
 
-named!(pub asn1_integer <Asn1Integer>, do_parse!(
+named!(pub asn1_integer <Asn1Type>, do_parse!(
   tag!("INTEGER") >>
   opt!(skip_other) >>
   // TODO: Don't ignore all this stuff
@@ -11,5 +11,5 @@ named!(pub asn1_integer <Asn1Integer>, do_parse!(
     tag!("}") >>
     ()
   )) >>
-  (Asn1Integer {})
+  (Asn1Type::Integer)
 ));

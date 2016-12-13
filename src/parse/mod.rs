@@ -52,11 +52,11 @@ named!(pub asn1_type_def <Asn1Def>, do_parse!(
 ));
 
 named!(pub asn1_type <Asn1Type>, alt!(
-  do_parse!(s: asn1_seq >> (Asn1Type::Seq(s))) |
-  do_parse!(s: asn1_set >> (Asn1Type::Set(s))) |
-  do_parse!(c: asn1_choice >> (Asn1Type::Choice(c))) |
-  do_parse!(i: asn1_integer >> (Asn1Type::Integer(i))) |
-  do_parse!(t: asn1_assignment >> (Asn1Type::Type(t)))
+  asn1_seq |
+  asn1_set |
+  asn1_choice |
+  asn1_integer |
+  asn1_assignment
 ));
 
 named!(pub asn1_type_name <String>, do_parse!(
@@ -72,7 +72,10 @@ named!(pub asn1_type_name <String>, do_parse!(
   (String::from_utf8(Vec::from(s)).unwrap())
 ));
 
-named!(pub asn1_assignment <String>, call!(asn1_type_name));
+named!(pub asn1_assignment <Asn1Type>, do_parse!(
+  t: asn1_type_name >>
+  (Asn1Type::Type(t))
+));
 
 named!(pub asn1_field <Asn1Field>, do_parse!(
   name: asn1_type_name >>
@@ -136,13 +139,13 @@ fn test_asn1_field() {
   let field2 = ::Asn1Field {
     name: "asdf".into(),
     tag: Some((Asn1Class::Application, 9)),
-    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+    asn1_type: ::Asn1Type::Integer,
     optional: Some(Asn1Optional::Optional),
   };
   let field3 = ::Asn1Field {
     name: "sample".into(),
     tag: None,
-    asn1_type: ::Asn1Type::Integer(::Asn1Integer),
+    asn1_type: ::Asn1Type::Integer,
     optional: Some(Asn1Optional::Default("TRUE".into())),
   };
   assert_eq!(
