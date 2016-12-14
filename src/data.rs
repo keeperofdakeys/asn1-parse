@@ -5,13 +5,20 @@ pub struct Asn1Spec {
 
 #[derive(PartialEq, Debug)]
 pub enum Asn1Type {
-  Type(String),
+  // An ordered collection of types
   Seq(Vec<Asn1SeqField>),
+  // An ordered collection of a specific type
   SeqOf(Box<Asn1Type>),
+  // An unordered collection of types
   Set(Vec<Asn1SetField>),
+  // An unordered collection of a specific type
   SetOf(Box<Asn1Type>),
+  // A Choice
   Choice(Vec<Asn1ChoiceField>),
+  // An integer
   Integer,
+  // A generic Asn1Type
+  Type(String),
 }
 
 #[derive(PartialEq, Debug)]
