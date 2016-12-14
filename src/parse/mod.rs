@@ -8,6 +8,7 @@ pub mod int;
 pub mod spec;
 
 use nom::{is_alphanumeric, alpha, digit};
+
 use parse::space::skip_other;
 use parse::seq::asn1_seq;
 use parse::seq_of::asn1_seq_of;
@@ -73,7 +74,8 @@ named!(pub asn1_type_name <String>, do_parse!(
     tag!("INSTANCE OF") |
     tag!("EMBEDDED PDV") |
     tag!("CHARACTER STRING") |
-    take_while!(is_alphanumeric)
+    take_while1!(is_alphanumeric) |
+    tag!("ERROR")
   ) >>
   (String::from_utf8(Vec::from(s)).unwrap())
 ));
