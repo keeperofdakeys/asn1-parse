@@ -31,34 +31,34 @@ BEGIN
 -- 
 -- maxInt INTEGER ::= 2147483647 -- (2^^31 - 1) --
 -- 
--- LDAPString ::= OCTET STRING -- UTF-8 encoded,
---                             -- [ISO10646] characters
--- 
+LDAPString ::= OCTET STRING -- UTF-8 encoded,
+                            -- [ISO10646] characters
+
 LDAPOID ::= OCTET STRING -- Constrained to <numericoid>
                          -- [RFC4512]
--- 
--- LDAPDN ::= LDAPString -- Constrained to <distinguishedName>
---                       -- [RFC4514]
--- 
--- RelativeLDAPDN ::= LDAPString -- Constrained to <name-component>
---                               -- [RFC4514]
--- 
--- AttributeDescription ::= LDAPString
---                         -- Constrained to <attributedescription>
---                         -- [RFC4512]
--- 
--- AttributeValue ::= OCTET STRING
--- 
--- AttributeValueAssertion ::= SEQUENCE {
---      attributeDesc   AttributeDescription,
---      assertionValue  AssertionValue }
--- 
--- AssertionValue ::= OCTET STRING
--- 
--- PartialAttribute ::= SEQUENCE {
---      type       AttributeDescription,
---      vals       SET OF value AttributeValue }
--- 
+
+LDAPDN ::= LDAPString -- Constrained to <distinguishedName>
+                      -- [RFC4514]
+
+RelativeLDAPDN ::= LDAPString -- Constrained to <name-component>
+                              -- [RFC4514]
+
+AttributeDescription ::= LDAPString
+                        -- Constrained to <attributedescription>
+                        -- [RFC4512]
+
+AttributeValue ::= OCTET STRING
+
+AttributeValueAssertion ::= SEQUENCE {
+     attributeDesc   AttributeDescription,
+     assertionValue  AssertionValue }
+
+AssertionValue ::= OCTET STRING
+
+PartialAttribute ::= SEQUENCE {
+     type       AttributeDescription,
+     vals       SET OF value AttributeValue }
+
 -- Attribute ::= PartialAttribute(WITH COMPONENTS {
 --      ...,
 --      vals (SIZE(1..MAX))})
@@ -169,10 +169,10 @@ LDAPOID ::= OCTET STRING -- Constrained to <numericoid>
 --      filter          Filter,
 --      attributes      AttributeSelection }
 -- 
--- AttributeSelection ::= SEQUENCE OF selector LDAPString
---                -- The LDAPString is constrained to
---                -- <attributeSelector> in Section 4.5.1.8
--- 
+AttributeSelection ::= SEQUENCE OF selector LDAPString
+               -- The LDAPString is constrained to
+               -- <attributeSelector> in Section 4.5.1.8
+
 -- Filter ::= CHOICE {
 --      and             [0] SET SIZE (1..MAX) OF filter Filter,
 --      or              [1] SET SIZE (1..MAX) OF filter Filter,
@@ -194,24 +194,24 @@ LDAPOID ::= OCTET STRING -- Constrained to <numericoid>
 --           final   [2] AssertionValue } -- can occur at most once
 --      }
 -- 
--- MatchingRuleAssertion ::= SEQUENCE {
---      matchingRule    [1] MatchingRuleId OPTIONAL,
---      type            [2] AttributeDescription OPTIONAL,
---      matchValue      [3] AssertionValue,
---      dnAttributes    [4] BOOLEAN DEFAULT FALSE }
--- 
--- SearchResultEntry ::= [APPLICATION 4] SEQUENCE {
---      objectName      LDAPDN,
---      attributes      PartialAttributeList }
--- 
--- PartialAttributeList ::= SEQUENCE OF
---                      partialAttribute PartialAttribute
--- 
+MatchingRuleAssertion ::= SEQUENCE {
+     matchingRule    [1] MatchingRuleId OPTIONAL,
+     type            [2] AttributeDescription OPTIONAL,
+     matchValue      [3] AssertionValue,
+     dnAttributes    [4] BOOLEAN DEFAULT FALSE }
+
+SearchResultEntry ::= [APPLICATION 4] SEQUENCE {
+     objectName      LDAPDN,
+     attributes      PartialAttributeList }
+
+PartialAttributeList ::= SEQUENCE OF
+                     partialAttribute PartialAttribute
+
 -- SearchResultReference ::= [APPLICATION 19] SEQUENCE
 --                           SIZE (1..MAX) OF uri URI
--- 
--- SearchResultDone ::= [APPLICATION 5] LDAPResult
--- 
+
+SearchResultDone ::= [APPLICATION 5] LDAPResult
+
 -- ModifyRequest ::= [APPLICATION 6] SEQUENCE {
 --      object          LDAPDN,
 --      changes         SEQUENCE OF change SEQUENCE {
@@ -222,40 +222,40 @@ LDAPOID ::= OCTET STRING -- Constrained to <numericoid>
 --                ...  },
 --           modification    PartialAttribute } }
 -- 
--- ModifyResponse ::= [APPLICATION 7] LDAPResult
--- 
--- AddRequest ::= [APPLICATION 8] SEQUENCE {
---      entry           LDAPDN,
---      attributes      AttributeList }
--- 
--- AttributeList ::= SEQUENCE OF attribute Attribute
--- 
--- AddResponse ::= [APPLICATION 9] LDAPResult
--- 
--- DelRequest ::= [APPLICATION 10] LDAPDN
--- 
--- DelResponse ::= [APPLICATION 11] LDAPResult
--- 
+ModifyResponse ::= [APPLICATION 7] LDAPResult
+
+AddRequest ::= [APPLICATION 8] SEQUENCE {
+     entry           LDAPDN,
+     attributes      AttributeList }
+
+AttributeList ::= SEQUENCE OF attribute Attribute
+
+AddResponse ::= [APPLICATION 9] LDAPResult
+
+DelRequest ::= [APPLICATION 10] LDAPDN
+
+DelResponse ::= [APPLICATION 11] LDAPResult
+
 ModifyDNRequest ::= [APPLICATION 12] SEQUENCE {
      entry           LDAPDN,
      newrdn          RelativeLDAPDN,
      deleteoldrdn    BOOLEAN,
      newSuperior     [0] LDAPDN OPTIONAL }
--- 
--- ModifyDNResponse ::= [APPLICATION 13] LDAPResult
--- 
--- CompareRequest ::= [APPLICATION 14] SEQUENCE {
---      entry           LDAPDN,
---      ava             AttributeValueAssertion }
--- 
--- CompareResponse ::= [APPLICATION 15] LDAPResult
--- 
--- AbandonRequest ::= [APPLICATION 16] MessageID
--- 
--- ExtendedRequest ::= [APPLICATION 23] SEQUENCE {
---      requestName      [0] LDAPOID,
---      requestValue     [1] OCTET STRING OPTIONAL }
--- 
+
+ModifyDNResponse ::= [APPLICATION 13] LDAPResult
+
+CompareRequest ::= [APPLICATION 14] SEQUENCE {
+     entry           LDAPDN,
+     ava             AttributeValueAssertion }
+
+CompareResponse ::= [APPLICATION 15] LDAPResult
+
+AbandonRequest ::= [APPLICATION 16] MessageID
+
+ExtendedRequest ::= [APPLICATION 23] SEQUENCE {
+     requestName      [0] LDAPOID,
+     requestValue     [1] OCTET STRING OPTIONAL }
+
 -- ExtendedResponse ::= [APPLICATION 24] SEQUENCE {
 --      COMPONENTS OF LDAPResult,
 --      responseName     [10] LDAPOID OPTIONAL,
