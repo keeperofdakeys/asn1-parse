@@ -8,11 +8,11 @@ pub enum Asn1Type {
   // An ordered collection of types
   Seq(Vec<Asn1SeqField>),
   // An ordered collection of a specific type
-  SeqOf(Box<Asn1Type>),
+  SeqOf(Option<String>, Box<Asn1Type>),
   // An unordered collection of types
   Set(Vec<Asn1SetField>),
   // An unordered collection of a specific type
-  SetOf(Box<Asn1Type>),
+  SetOf(Option<String>, Box<Asn1Type>),
   // A Choice
   Choice(Vec<Asn1ChoiceField>),
   // An integer
