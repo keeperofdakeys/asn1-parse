@@ -66,6 +66,8 @@ named!(pub asn1_type <Asn1Type>, alt!(
   asn1_assignment
 ));
 
+named!(pub non_empty_string, take_while1!(is_alphanumeric));
+
 named!(pub asn1_type_name <String>, do_parse!(
   s: alt!(
     tag!("BIT STRING") |
@@ -74,8 +76,7 @@ named!(pub asn1_type_name <String>, do_parse!(
     tag!("INSTANCE OF") |
     tag!("EMBEDDED PDV") |
     tag!("CHARACTER STRING") |
-    take_while1!(is_alphanumeric) |
-    tag!("ERROR")
+    call!(non_empty_string)
   ) >>
   (String::from_utf8(Vec::from(s)).unwrap())
 ));
