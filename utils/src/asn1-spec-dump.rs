@@ -1,5 +1,4 @@
 extern crate asn1_parse;
-#[macro_use]
 extern crate nom;
 extern crate argparse;
 
@@ -20,7 +19,7 @@ fn main() {
     None => io::stdin().bytes().collect(),
   };
   let buffer = bytes.unwrap();
-  let elems: nom::IResult<_, _> = many0!(buffer.as_slice(), complete!(asn1_spec));
+  let elems: nom::IResult<_, _> = asn1_spec(buffer.as_slice());
   println!("{:#?}", elems);
 }
 
