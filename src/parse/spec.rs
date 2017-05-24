@@ -2,8 +2,16 @@ use data::Asn1Spec;
 use parse::asn1_type_def;
 use parse::space::skip_other;
 
+use nom::{eol, space};
+
 named!(pub asn1_spec <Asn1Spec>, do_parse!(
-  tag!("BEGIN") >>
+  // For now skip parsing the definition line
+  do_parse!(
+    take_until_and_consume!("BEGIN") >>
+    opt!(space) >>
+    eol >>
+    ()
+  ) >>
   opt!(skip_other) >>
   defs: many_till!(
     do_parse!(
