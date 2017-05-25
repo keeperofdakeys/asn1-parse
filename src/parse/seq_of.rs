@@ -1,4 +1,5 @@
 use nom::is_alphanumeric;
+use nom::space;
 
 use data::Asn1Type;
 use parse::asn1_type;
@@ -10,7 +11,10 @@ named!(pub asn1_seq_of <Asn1Type>, do_parse!(
   t: alt!(
     do_parse!(
       s: take_while1!(is_alphanumeric) >>
-      skip_other >>
+      // FIXME: We should use skip_other here, but the alt!
+      // macro call requires a more strict termination point.
+      // (The second option fails otherwise).
+      space >>
       t: asn1_type >>
       (Some(s), t)
     ) |
