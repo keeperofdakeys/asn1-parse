@@ -67,7 +67,9 @@ named!(pub asn1_type <Asn1Type>, alt!(
   asn1_assignment
 ));
 
-named!(pub non_empty_string, take_while1!(is_alphanumeric));
+pub fn is_asn1_type_char(chr: u8) -> bool {
+  is_alphanumeric(chr) || chr == '-' as u8
+}
 
 named!(pub asn1_type_name <String>, do_parse!(
   s: alt!(
@@ -77,7 +79,7 @@ named!(pub asn1_type_name <String>, do_parse!(
     tag!("INSTANCE OF") |
     tag!("EMBEDDED PDV") |
     tag!("CHARACTER STRING") |
-    call!(non_empty_string)
+    take_while1!(is_asn1_type_char)
   ) >>
   (String::from_utf8(Vec::from(s)).unwrap())
 ));
@@ -181,7 +183,7 @@ fn test_asn1_field() {
   );
   assert_eq!(
     field1,
-    asn1_field_def("foo--test\n Bar,".as_bytes()).unwrap().1
+    asn1_field_def("foo --test\n Bar,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field3,
