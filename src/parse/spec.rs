@@ -1,18 +1,36 @@
-use data::Asn1Spec;
+use data::{Asn1Spec, Tagging};
 use parse::asn1_type_def;
 use parse::space::skip_other;
 
 use nom::{eol, space};
 
 named!(pub asn1_spec <Asn1Spec>, do_parse!(
-  // For now skip parsing the definition line
+  // TODO: Parse asn1 definition name (ldap has numbers after it?)
+  do_parse!(
+    take_until_and_consume!("DEFINITIONS") >>
+    opt!(skip_other) >>
+    ()
+  ) >>
+  // TODO: Handle explicit tags, extensibility not implied?, and maybe other things
+  do_parse!(
+    tag!("IMPLICIT TAGS") >>
+    opt!(skip_other) >>
+    ()
+  ) >>
+  opt!(do_parse!(
+    tag!("EXTENSIBILITY IMPLIED") >>
+    opt!(skip_other) >>
+    ()
+  )) >>
+  tag!("::=") >>
+  opt!(skip_other) >>
   do_parse!(
     take_until_and_consume!("BEGIN") >>
     opt!(space) >>
     eol >>
     ()
   ) >>
-  opt!(skip_other) >>
+  a: opt!(skip_other) >>
   defs: many_till!(
     do_parse!(
       def: asn1_type_def >>
@@ -22,14 +40,21 @@ named!(pub asn1_spec <Asn1Spec>, do_parse!(
     tag!("END")
   ) >>
   (Asn1Spec {
+    tagging: Tagging::Implicit,
     defs: defs.0
+    // defs: vec![]
   })
 ));
 
 #[test]
 fn test_asn1_spec() {
   assert_eq!(
-    asn1_spec("BEGIN
+    asn1_spec("
+      DEFINITIONS
+      IMPLICIT TAGS
+      EXTENSIBILITY IMPLIED
+      ::=
+      BEGIN
       Foo ::= INTEGER
       Bar ::= [3] Foo
       Asdf ::= SET {
@@ -38,6 +63,7 @@ fn test_asn1_spec() {
       END\
     ".as_bytes()).unwrap().1,
     ::Asn1Spec {
+      tagging: ::Tagging::Implicit,
       defs: vec![
         ::Asn1Def {
           name: "Foo".into(),

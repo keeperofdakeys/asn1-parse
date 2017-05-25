@@ -1,5 +1,12 @@
 #[derive(PartialEq, Debug)]
+pub enum Tagging {
+  Explicit,
+  Implicit
+}
+
+#[derive(PartialEq, Debug)]
 pub struct Asn1Spec {
+  pub tagging: Tagging,
   pub defs: Vec<Asn1Def>,
 }
 
