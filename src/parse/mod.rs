@@ -16,7 +16,8 @@ use parse::set::asn1_set;
 use parse::set_of::asn1_set_of;
 use parse::choice::asn1_choice;
 use parse::int::asn1_integer;
-use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field, Asn1Optional};
+use data::{Asn1Type, Asn1Class, Asn1Tag, Asn1Def, Asn1Field, Asn1FieldDef,
+           Asn1Optional};
 
 named!(pub asn1_class_tag <Asn1Tag>, do_parse!(
   class: opt!(alpha) >>
@@ -86,7 +87,20 @@ named!(pub asn1_assignment <Asn1Type>, do_parse!(
   (Asn1Type::Type(t))
 ));
 
-named!(pub asn1_field <Asn1Field>, do_parse!(
+named!(pub extent_marker <Asn1Field>, do_parse!(
+  tag!("...") >>
+  (Asn1Field::ExtentMarker)
+));
+
+named!(pub asn1_field <Asn1Field>, alt!(
+  extent_marker |
+  do_parse!(
+    def: asn1_field_def >>
+    (Asn1Field::Def(def))
+  )
+));
+
+named!(pub asn1_field_def <Asn1FieldDef>, do_parse!(
   name: asn1_type_name >>
   opt!(skip_other) >>
   tag: opt!(asn1_tag) >>
@@ -94,7 +108,7 @@ named!(pub asn1_field <Asn1Field>, do_parse!(
   asn1_type: asn1_type >>
   opt!(skip_other) >>
   optional: opt!(alt!(asn1_field_optional | asn1_field_default)) >>
-  (Asn1Field {
+  (Asn1FieldDef {
     name: name,
     tag: tag,
     asn1_type: asn1_type,
@@ -139,19 +153,19 @@ fn test_asn1_tag() {
 
 #[test]
 fn test_asn1_field() {
-  let field1 = ::Asn1Field {
+  let field1 = ::Asn1FieldDef {
     name: "foo".into(),
     tag: None,
     asn1_type: ::Asn1Type::Type("Bar".into()),
     optional: None,
   };
-  let field2 = ::Asn1Field {
+  let field2 = ::Asn1FieldDef {
     name: "asdf".into(),
     tag: Some((Asn1Class::Application, 9)),
     asn1_type: ::Asn1Type::Integer,
     optional: Some(Asn1Optional::Optional),
   };
-  let field3 = ::Asn1Field {
+  let field3 = ::Asn1FieldDef {
     name: "sample".into(),
     tag: None,
     asn1_type: ::Asn1Type::Integer,
@@ -159,18 +173,26 @@ fn test_asn1_field() {
   };
   assert_eq!(
     field1,
-    asn1_field("foo Bar,".as_bytes()).unwrap().1
+    asn1_field_def("foo Bar,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field2,
-    asn1_field("asdf [APPLICATION 9] INTEGER OPTIONAL,".as_bytes()).unwrap().1
+    asn1_field_def("asdf [APPLICATION 9] INTEGER OPTIONAL,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field1,
-    asn1_field("foo--test\n Bar,".as_bytes()).unwrap().1
+    asn1_field_def("foo--test\n Bar,".as_bytes()).unwrap().1
   );
   assert_eq!(
     field3,
+    asn1_field_def("sample INTEGER DEFAULT TRUE,".as_bytes()).unwrap().1
+  );
+  assert_eq!(
+    Asn1Field::Def(field3),
     asn1_field("sample INTEGER DEFAULT TRUE,".as_bytes()).unwrap().1
+  );
+  assert_eq!(
+    Asn1Field::ExtentMarker,
+    asn1_field("...".as_bytes()).unwrap().1
   );
 }

@@ -1,8 +1,6 @@
-use data::{Asn1Type, Asn1ChoiceField};
+use data::Asn1Type;
 use parse::asn1_field;
 use parse::space::skip_other;
-
-named!(pub asn1_choice_field <Asn1ChoiceField>, call!(asn1_field));
 
 named!(pub asn1_choice <Asn1Type>, do_parse!(
   tag!("CHOICE") >>
@@ -11,7 +9,7 @@ named!(pub asn1_choice <Asn1Type>, do_parse!(
     tag!("{"),
     separated_list!(
       do_parse!(opt!(skip_other) >> tag!(",") >> ()),
-      do_parse!(opt!(skip_other) >> f: asn1_choice_field >> (f))
+      do_parse!(opt!(skip_other) >> f: asn1_field >> (f))
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>
@@ -22,18 +20,18 @@ named!(pub asn1_choice <Asn1Type>, do_parse!(
 fn test_choice() {
   let choice = Asn1Type::Choice(
     vec![
-      Asn1ChoiceField {
+      ::Asn1Field::Def(::Asn1FieldDef {
         name: "foo".into(),
         tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
         optional: None,
-      },
-      Asn1ChoiceField {
+      }),
+      ::Asn1Field::Def(::Asn1FieldDef {
         name: "asdf".into(),
         tag: None,
         asn1_type: ::Asn1Type::Integer,
         optional: None,
-      }
+      })
     ]
   );
   assert_eq!(

@@ -1,8 +1,6 @@
-use data::{Asn1Type, Asn1SetField};
+use data::Asn1Type;
 use parse::asn1_field;
 use parse::space::skip_other;
-
-named!(pub asn1_set_field <Asn1SetField>, call!(asn1_field));
 
 named!(pub asn1_set <Asn1Type>, do_parse!(
   tag!("SET") >>
@@ -11,7 +9,7 @@ named!(pub asn1_set <Asn1Type>, do_parse!(
     tag!("{"),
     separated_list!(
       do_parse!(opt!(skip_other) >> tag!(",") >> ()),
-      do_parse!(opt!(skip_other) >> f: asn1_set_field >> (f))
+      do_parse!(opt!(skip_other) >> f: asn1_field >> (f))
     ),
     tuple!(opt!(skip_other), tag!("}"))
   ) >>
@@ -22,18 +20,18 @@ named!(pub asn1_set <Asn1Type>, do_parse!(
 fn test_set() {
   let set = Asn1Type::Set(
     vec![
-      Asn1SetField {
+      ::Asn1Field::Def(::Asn1FieldDef {
         name: "foo".into(),
         tag: None,
         asn1_type: ::Asn1Type::Type("Bar".into()),
         optional: None,
-      },
-      Asn1SetField {
+      }),
+      ::Asn1Field::Def(::Asn1FieldDef {
         name: "asdf".into(),
         tag: None,
         asn1_type: ::Asn1Type::Integer,
         optional: None,
-      }
+      })
     ]
   );
   assert_eq!(

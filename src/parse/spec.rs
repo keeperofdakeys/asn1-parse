@@ -79,12 +79,12 @@ fn test_asn1_spec() {
           name: "Asdf".into(),
           tag: None,
           assign: ::Asn1Type::Set(
-            vec![::Asn1Field {
+            vec![::Asn1Field::Def(::Asn1FieldDef {
               name: "qwerty".into(),
               tag: None,
               asn1_type: ::Asn1Type::Type("Foo".into()),
               optional: None,
-            }]
+            })]
           ),
         }
       ],

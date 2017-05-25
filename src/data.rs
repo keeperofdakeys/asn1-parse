@@ -13,15 +13,15 @@ pub struct Asn1Spec {
 #[derive(PartialEq, Debug)]
 pub enum Asn1Type {
   // An ordered collection of types
-  Seq(Vec<Asn1SeqField>),
+  Seq(Vec<Asn1Field>),
   // An ordered collection of a specific type
   SeqOf(Option<String>, Box<Asn1Type>),
   // An unordered collection of types
-  Set(Vec<Asn1SetField>),
+  Set(Vec<Asn1Field>),
   // An unordered collection of a specific type
   SetOf(Option<String>, Box<Asn1Type>),
   // A Choice
-  Choice(Vec<Asn1ChoiceField>),
+  Choice(Vec<Asn1Field>),
   // An integer
   Integer,
   // A generic Asn1Type
@@ -62,10 +62,6 @@ pub struct Asn1Def {
   pub assign: Asn1Type,
 }
 
-pub type Asn1SeqField = Asn1Field;
-pub type Asn1SetField = Asn1Field;
-pub type Asn1ChoiceField = Asn1Field;
-
 #[derive(PartialEq, Debug)]
 pub enum Asn1Optional {
   Optional,
@@ -73,7 +69,13 @@ pub enum Asn1Optional {
 }
 
 #[derive(PartialEq, Debug)]
-pub struct Asn1Field {
+pub enum Asn1Field {
+  ExtentMarker,
+  Def(Asn1FieldDef),
+}
+
+#[derive(PartialEq, Debug)]
+pub struct Asn1FieldDef {
   pub name: String,
   pub tag: Option<Asn1Tag>,
   pub asn1_type: Asn1Type,
