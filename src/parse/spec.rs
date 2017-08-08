@@ -2,9 +2,36 @@ use data::{Asn1Spec, Tagging};
 use parse::asn1_type_def;
 use parse::space::skip_other;
 
-use nom::{eol, space};
+use nom::{eol, space, IResult};
 
-named!(pub asn1_spec <Asn1Spec>, do_parse!(
+enum SpecErr {
+  Custom(u32)
+}
+
+impl From<u32> for SpecErr {
+  fn from(err: u32) -> SpecErr {
+    SpecErr::Custom(err)
+  }
+}
+
+macro_rules! conv_nom_error {
+  ($submac:ident!( $($args:tt)* )) => (
+    {
+      match $submac!($($args)*) {
+        IResult::Incomplete(x) => IResult::Incomplete(x),
+        IResult::Done(i, o)    => IResult::Done(i, o),
+        IResult::Error(err) => {
+          match err {
+            ErrorKind::Custom(e) => SpecErr::Custom(e),
+            _ => err,
+          }
+        }
+      }
+    }
+  );
+}
+
+named!(pub asn1_spec <&[u8], Asn1Spec, SpecErr>, conv_nom_error!( do_parse!(
   // TODO: Parse asn1 definition name (ldap has numbers after it?)
   do_parse!(
     take_until_and_consume!("DEFINITIONS") >>
@@ -44,7 +71,7 @@ named!(pub asn1_spec <Asn1Spec>, do_parse!(
     defs: defs.0
     // defs: vec![]
   })
-));
+)));
 
 #[test]
 fn test_asn1_spec() {

@@ -7,6 +7,6 @@ authors = ["Josh <keeperofdakeys@gmail.com>"]
 path = "src/lib.rs"
 
 [dependencies]
-nom = "^3.0"
+nom = "^3"
 # Use our nom for the eol patch
 # nom = { path = "../nom" }

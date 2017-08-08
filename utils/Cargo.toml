@@ -9,6 +9,6 @@ name = "dump"
 
 [dependencies]
 asn1-parse = { path = "../" }
-nom = "^3.0"
+nom = "^3"
 # nom = { path = "../../nom" }
 argparse = "0.2"
